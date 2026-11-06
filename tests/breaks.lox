@@ -1,0 +1,80 @@
+// Run each test one by one in the REPL
+
+// Test 1: Break inside a while loop.
+while (true) {
+    print "Test 1: Passed";
+    break;
+}
+
+// Test 2: Break directly inside a while loop.
+var i = 0;
+while (i < 5) {
+    print "Test 2: Passed";
+    break;
+}
+
+// Test 3: Break inside a nested block.
+while (true) {
+    {
+        print "Test 3: Passed";
+        break;
+    }
+}
+
+// Test 4: Break inside a nested loop.
+while (true) {
+    while (true) {
+        print "Test 4: Passed";
+        break;
+    }
+    break;
+}
+
+// Test 5: Break inside a function's own loop.
+fun testFunction() {
+    while (true) {
+        print "Test 5: Passed";
+        break;
+    }
+}
+testFunction();
+
+// Test 6: Function declared inside a loop with its own loop.
+while (true) {
+    fun nestedFunction() {
+        while (true) {
+            print "Test 6: Passed";
+            break;
+        }
+    }
+
+    nestedFunction();
+    break;
+}
+
+
+// The following tests should result in an error message.
+// Test 7: Break outside any loop.
+break;
+
+// Test 8: Break inside a function but outside a loop.
+fun invalidFunction() {
+    break;
+}
+
+// Test 9: Function declared inside a loop cannot break the outer loop.
+while (true) {
+    fun invalidNestedFunction() {
+        break;
+    }
+}
+
+// Test 10: Break inside an if statement but outside a loop.
+if (true) {
+    break;
+}
+
+// Test 11: Break inside a nested block but outside a loop.
+{
+    break;
+}

@@ -1,0 +1,15 @@
+var a = "global";
+{
+  fun showA() {
+    print a;
+  }
+
+  showA();
+  var a = "block";
+  showA();
+}
+
+// Should print "global" twice
+/*
+The first call to showA() should definitely print “global” since we haven’t even reached the declaration of the inner a yet. And by our rule that a variable expression always resolves to the same variable, that implies the second call to showA() should print the same thing.
+*/
