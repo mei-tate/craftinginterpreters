@@ -1,0 +1,9 @@
+print "apple" < "banana";    // true
+print "banana" > "apple";    // true
+print "apple" == "apple";    // true
+print "apple" <= "apple";   // true
+
+print 10 < 20;               // true
+print 20 >= 10;              // true
+
+print "apple" < 10;          // RuntimeError

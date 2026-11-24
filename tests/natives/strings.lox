@@ -1,0 +1,13 @@
+var name = "  Mei Tate  ";
+
+print len(name);                  // 12
+print lower(name);                // "  mei tate  "
+print upper(name);                // "  MEI TATE  "
+print trim(name);                 // "Mei Tate"
+
+print contains(name, "Mei");      // true
+print startsWith(name, "  ");     // true
+print endsWith(name, "  ");       // true
+
+print replace(name, "Mei", "Jane");
+print substring(name, 2, 5);      // "Mei"

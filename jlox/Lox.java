@@ -56,6 +56,7 @@ public class Lox {
     Terminal terminal = TerminalBuilder.builder().system(true).build();
 
     LineReader reader = LineReaderBuilder.builder().terminal(terminal).build();
+    StringBuilder source = new StringBuilder();
 
     while (true) {
       String line;
@@ -66,15 +67,32 @@ public class Lox {
         // Ctrl+C clears the current input.
         continue;
       } catch (EndOfFileException e) {
+        if (source.length() > 0) {
+          run(source.toString(), true);
+        }
         // Ctrl+D exits the REPL.
         break;
       }
 
-      run(line, true);
+      if (source.length() > 0) source.append('\n');
+      source.append(line);
+      if (unmatchedBraces(source.toString()) > 0) continue;
+
+      run(source.toString(), true);
+      source.setLength(0);
       hadError = false;
     }
 
     terminal.close();
+  }
+
+  private static int unmatchedBraces(String source) {
+    int depth = 0;
+    for (Token token : new Scanner(source).scanTokens()) {
+      if (token.type == TokenType.LEFT_BRACE) depth++;
+      if (token.type == TokenType.RIGHT_BRACE) depth--;
+    }
+    return depth;
   }
 
   /**

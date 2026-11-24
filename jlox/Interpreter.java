@@ -9,7 +9,7 @@ import java.util.Map;
  * Interpreter: declares that it’s a visitor. The return type of the visit methods will be Object,
  * the root class that we use to refer to a Lox value in our Java code.
  */
-class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
+public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   // globals holds a fixed reference to the outermost global environment.
   final Environment globals = new Environment();
   // Tracks the current environment.
@@ -51,6 +51,12 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             return "<native fn>";
           }
         });
+    jlox.nativefunctions.CollectionNatives.register(globals);
+    jlox.nativefunctions.InputOutputNatives.register(globals);
+    jlox.nativefunctions.MathNatives.register(globals);
+    jlox.nativefunctions.StringNatives.register(globals);
+    jlox.nativefunctions.SystemNatives.register(globals);
+    jlox.nativefunctions.TypeNatives.register(globals);
   }
 
   void interpret(List<Stmt> statements) {
@@ -98,8 +104,22 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   /** Evaluating Class Statements */
   @Override
   public Void visitClassStmt(Stmt.Class stmt) {
+    Object superclass = null;
+    if (stmt.superclass != null) {
+      superclass = evaluate(stmt.superclass);
+      if (!(superclass instanceof LoxClass)) {
+        throw new RuntimeError(stmt.superclass.name,
+            "Superclass must be a class.");
+      }
+    }
+
     // Declare the class's name in the current environment.
     environment.define(stmt.name.lexeme, null);
+
+    if (stmt.superclass != null) {
+      environment = new Environment(environment);
+      environment.defineAt(0, superclass);
+    }
 
     Map<String, LoxFunction> methods = new HashMap<>();
     for (Stmt.Function method : stmt.methods) {
@@ -113,7 +133,13 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
       methods.put(method.name.lexeme, function);
     }
 
-    LoxClass klass = new LoxClass(stmt.name.lexeme, methods);
+    LoxClass klass = new LoxClass(stmt.name.lexeme,
+        (LoxClass)superclass, methods);
+
+    if (superclass != null) {
+      environment = environment.enclosing;
+    }
+
     // Store the class object in the variable we previously declared.
     environment.assign(stmt.name, klass);
     return null;
@@ -279,6 +305,28 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     return value;
   }
 
+  @Override
+  public Object visitSuperExpr(Expr.Super expr) {
+    LocalAddress address = locals.get(expr);
+    int distance = address.depth;
+    int superSlot = address.slot;
+
+    LoxClass superclass = (LoxClass)environment.getAt(
+        distance, superSlot);
+
+    LoxInstance object = (LoxInstance)environment.getAt(
+        distance - 1, 0);
+
+    LoxFunction method = superclass.findMethod(expr.method.lexeme);
+
+    if (method == null) {
+      throw new RuntimeError(expr.method,
+          "Undefined property '" + expr.method.lexeme + "'.");
+    }
+
+    return method.bind(object);
+  }
+
   /** Evaluating Class's This Expressions */
   @Override
   public Object visitThisExpr(Expr.This expr) {
@@ -362,6 +410,12 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     throw new RuntimeError(operator, "Operands must be numbers.");
   }
 
+  private void checkNumberOrStringOperands(Token operator, Object left, Object right) {
+    if (left instanceof Double && right instanceof Double) return;
+    if (left instanceof String && right instanceof String) return;
+    throw new RuntimeError(operator, "Operands must be two numbers or two strings.");
+  }
+
   /** Lox follows Ruby’s rule: false and nil are false, and everything else is truth. */
   private boolean isTruth(Object object) {
     if (object == null) return false;
@@ -381,17 +435,28 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
       case TokenType.EQUAL_EQUAL:
         return isEqual(left, right);
       case TokenType.GREATER:
-        checkNumberOperands(expr.operator, left, right);
-        checkNumberOperand(expr.operator, right);
+        checkNumberOrStringOperands(expr.operator, left, right);
+        if (left instanceof String) {
+          return ((String) left).compareTo((String) right) > 0;
+        }
         return (double) left > (double) right;
       case TokenType.GREATER_EQUAL:
-        checkNumberOperands(expr.operator, left, right);
+        checkNumberOrStringOperands(expr.operator, left, right);
+        if (left instanceof String) {
+          return ((String) left).compareTo((String) right) >= 0;
+        }
         return (double) left >= (double) right;
       case TokenType.LESS:
-        checkNumberOperands(expr.operator, left, right);
+        checkNumberOrStringOperands(expr.operator, left, right);
+        if (left instanceof String) {
+          return ((String) left).compareTo((String) right) < 0;
+        }
         return (double) left < (double) right;
       case TokenType.LESS_EQUAL:
-        checkNumberOperands(expr.operator, left, right);
+        checkNumberOrStringOperands(expr.operator, left, right);
+        if (left instanceof String) {
+          return ((String) left).compareTo((String) right) <= 0;
+        }
         return (double) left <= (double) right;
       case TokenType.MINUS:
         checkNumberOperands(expr.operator, left, right);

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class Environment {
+public class Environment {
   final Environment enclosing;
   private final List<Object> values = new ArrayList<>();
   private final Map<String, Object> globals = new HashMap<>();
@@ -36,7 +36,7 @@ class Environment {
     throw new RuntimeError(name, "Undefined variable '" + name.lexeme + "'.");
   }
 
-  void define(String name, Object value) {
+  public void define(String name, Object value) {
     globals.put(name, value);
   }
 

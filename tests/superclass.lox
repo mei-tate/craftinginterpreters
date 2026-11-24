@@ -1,0 +1,53 @@
+class Doughnut {
+  cook() {
+    print "Fry until golden brown.";
+  }
+}
+
+class BostonCream < Doughnut {
+  cook() {
+    super.cook();
+    print "Pipe full of custard and coat with chocolate.";
+  }
+}
+
+BostonCream().cook();
+// Should print:
+// Fry until golden brown.
+// Pipe full of custard and coat with chocolate.
+
+
+
+class Oops < Oops {}
+// Should return error "A class can't inherit from itself."
+
+
+var NotAClass = "I am totally not a class";
+class Subclass < NotAClass {} 
+// Should eturn error "Superclass must be a class."
+
+print super; // Syntax error.
+super.notEvenInAClass(); // broken use of super
+
+
+class A {
+  method() {
+    print "A method";
+  }
+}
+
+class B < A {
+  method() {
+    print "B method";
+  }
+
+  test() {
+    super.method();
+  }
+}
+
+class C < B {}
+
+C().test();
+
+// Should print "A method"

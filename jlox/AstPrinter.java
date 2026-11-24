@@ -38,6 +38,11 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
     StringBuilder builder = new StringBuilder("(class ");
     builder.append(stmt.name.lexeme);
 
+    if (stmt.superclass != null) {
+      builder.append(" < ");
+      builder.append(stmt.superclass.name.lexeme);
+    }
+
     for (Stmt.Function method : stmt.methods) {
       builder.append(" ");
       builder.append(method.accept(this));
@@ -165,6 +170,11 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
         + " "
         + expr.value.accept(this)
         + ")";
+  }
+
+  @Override
+  public String visitSuperExpr(Expr.Super expr) {
+    return "(super " + expr.method.lexeme + ")"; 
   }
 
   @Override

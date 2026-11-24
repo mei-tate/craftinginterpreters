@@ -1,0 +1,17 @@
+print time();
+print timeMillis();
+
+print "Enter your name:";
+var name = input();
+
+print "Hello, " + name;
+
+print type(10);           // number
+print type("hello");      // string
+print type(true);         // boolean
+print type(nil);          // nil
+print type(time);         // function
+
+print "Waiting...";
+sleep(2);
+print "Finished!";

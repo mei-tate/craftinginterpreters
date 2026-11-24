@@ -1,0 +1,10 @@
+print min(10, 5);       // 5
+print max(10, 5);       // 10
+print floor(3.9);       // 3
+print ceil(3.1);        // 4
+print round(3.6);       // 4
+print abs(-15);         // 15
+print sqrt(25);         // 5
+print pow(2, 8);        // 256
+print random();         // Random decimal between 0 and 1
+print randomInt(1, 10); // Random integer from 1 to 10

@@ -1,0 +1,12 @@
+var numbers = list();
+
+push(numbers, 10);
+push(numbers, 20);
+push(numbers, 30);
+
+print size(numbers);       // 3
+print includes(numbers, 20); // true
+
+reverse(numbers);
+print pop(numbers);        // 10
+print size(numbers);       // 2

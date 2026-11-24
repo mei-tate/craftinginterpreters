@@ -8,7 +8,7 @@ import java.util.List;
  * <p>The call() method receives the interpreter executing the call and a list of evaluated argument
  * values. It returns the result of the call expression.
  */
-interface LoxCallable {
+public interface LoxCallable {
   // Number of arguments a function or operation expects.
   int arity();
 
