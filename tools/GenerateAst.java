@@ -42,7 +42,7 @@ public class GenerateAst {
                         " List<Stmt.Function> methods",
             "Expression : Expr expression",
             "Function   : Token name, List<Token> params," +
-                        " List<Stmt> body",
+                        " List<Stmt> body, boolean isGetter",
             "If         : Expr condition, Stmt thenBranch," +
                         " Stmt elseBranch",
             "Print      : Expr expression",

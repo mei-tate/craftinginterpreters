@@ -59,7 +59,7 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
 
   @Override
   public String visitFunctionStmt(Stmt.Function stmt) {
-    StringBuilder builder = new StringBuilder("(fun ");
+    StringBuilder builder = new StringBuilder(stmt.isGetter ? "(get " : "(fun ");
     builder.append(stmt.name.lexeme);
     builder.append(" (");
 

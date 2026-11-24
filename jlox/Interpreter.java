@@ -129,7 +129,8 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
               method.params,
               method.body,
               environment,
-              method.name.lexeme.equals("init"));
+              method.name.lexeme.equals("init") && !method.isGetter,
+              method.isGetter);
       methods.put(method.name.lexeme, function);
     }
 
@@ -169,7 +170,8 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   /** Evaluating Functions */
   @Override
   public Void visitFunctionStmt(Stmt.Function stmt) {
-    LoxFunction function = new LoxFunction(stmt.name, stmt.params, stmt.body, environment, false);
+    LoxFunction function =
+        new LoxFunction(stmt.name, stmt.params, stmt.body, environment, false, false);
 
     Integer slot = declarationSlots.get(stmt.name);
     if (slot == null) environment.define(stmt.name.lexeme, function);
@@ -324,7 +326,9 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
           "Undefined property '" + expr.method.lexeme + "'.");
     }
 
-    return method.bind(object);
+    LoxFunction bound = method.bind(object);
+    if (bound.isGetter()) return bound.call(this, java.util.Collections.emptyList());
+    return bound;
   }
 
   /** Evaluating Class's This Expressions */
@@ -527,7 +531,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   public Object visitGetExpr(Expr.Get expr) {
     Object object = evaluate(expr.object);
     if (object instanceof LoxInstance) {
-      return ((LoxInstance) object).get(expr.name);
+      return ((LoxInstance) object).get(expr.name, this);
     }
 
     throw new RuntimeError(expr.name, "Only instances have properties.");
@@ -536,7 +540,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   /** Evaluating Lambdas. */
   @Override
   public Object visitFunctionExpr(Expr.Function expr) {
-    return new LoxFunction(null, expr.params, expr.body, environment, false);
+    return new LoxFunction(null, expr.params, expr.body, environment, false, false);
   }
 
   /**

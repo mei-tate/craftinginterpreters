@@ -51,21 +51,6 @@ To run the linter:
   print Math.square(3); // Prints "9".
   ```
   You can solve this however you like, but the “metaclasses” used by Smalltalk and Ruby are a particularly elegant approach. Hint: Make LoxClass extend LoxInstance and go from there.
-- Most modern languages support “getters” and “setters”—members on a class that look like field reads and writes but that actually execute user-defined code. Extend Lox to support getter methods. These are declared without a parameter list. The body of the getter is executed when a property with that name is accessed.
-  ```
-  class Circle {
-    init(radius) {
-      this.radius = radius;
-    }
-
-    area {
-      return 3.141592653 * this.radius * this.radius;
-    }
-  }
-
-  var circle = Circle(4);
-  print circle.area; // Prints roughly "50.2655".
-  ```
 - Lox supports only single inheritance—a class may have a single superclass and that’s the only way to reuse methods across classes. Other languages have explored a variety of ways to more freely reuse and share capabilities across classes: mixins, traits, multiple inheritance, virtual inheritance, extension methods, etc. Add some feature along these lines to Lox.
 
 
@@ -85,6 +70,7 @@ To run the linter:
 - REPL lets users type in both statements and expressions. If they enter a statement, its executed. If they enter an expression, its evaluated and display the result value.
 - Extended the resolver to associate a unique index for each local variable declared in a scope. When resolving a variable access, we look up both the scope the variable is in and its index and store that. In the interpreter, we use that to quickly access a variable by its index instead of using a map.
 - Expanded Lox's built-in native functions beyond the original book's single `clock()` function. Added native libraries for mathematical operations, string manipulation, I/O, type inspection, collections and data structures, and system utilities. Detailed documentation and function specifications are available in [nativefunctions.md](nativefunctions.md).
+- Supports getter methods. These are declared without a parameter list. The body of the getter is executed when a property with that name is accessed. See [getters.lox](/tests/getters.lox) for an example.
 
 ### Other Additions I added:
 - Improved REPL using JLine: 

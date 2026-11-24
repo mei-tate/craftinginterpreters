@@ -81,7 +81,7 @@ class Parser {
 
     List<Stmt.Function> methods = new ArrayList<>();
     while (!check(TokenType.RIGHT_BRACE) && !isAtEnd()) {
-      methods.add(function("method"));
+      methods.add(method());
     }
 
     consume(TokenType.RIGHT_BRACE, "Expect '}' after class body.");
@@ -94,7 +94,22 @@ class Parser {
    */
   private Stmt.Function function(String kind) {
     Token name = consume(TokenType.IDENTIFIER, "Expect " + kind + " name.");
-    consume(TokenType.LEFT_PAREN, "Expect '(' after " + kind + " name.");
+    return function(kind, name, false);
+  }
+
+  private Stmt.Function method() {
+    Token name = consume(TokenType.IDENTIFIER, "Expect method name.");
+    if (!match(TokenType.LEFT_PAREN)) {
+      consume(TokenType.LEFT_BRACE, "Expect '(' or '{' after method name.");
+      return new Stmt.Function(name, new ArrayList<>(), block(), true);
+    }
+    return function("method", name, true);
+  }
+
+  private Stmt.Function function(String kind, Token name, boolean openingParenConsumed) {
+    if (!openingParenConsumed) {
+      consume(TokenType.LEFT_PAREN, "Expect '(' after " + kind + " name.");
+    }
 
     List<Token> parameters = new ArrayList<>();
     if (!check(TokenType.RIGHT_PAREN)) {
@@ -112,7 +127,7 @@ class Parser {
     // Consuming it here lets us report a more precise error message if the { isn’t found.
     consume(TokenType.LEFT_BRACE, "Expect '{' before " + kind + " body.");
     List<Stmt> body = block();
-    return new Stmt.Function(name, parameters, body);
+    return new Stmt.Function(name, parameters, body, false);
   }
 
   /** varDecl → "var" IDENTIFIER ( "=" expression )? ";" ; */

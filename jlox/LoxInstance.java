@@ -12,7 +12,7 @@ class LoxInstance {
     this.klass = klass;
   }
 
-  Object get(Token name) {
+  Object get(Token name, Interpreter interpreter) {
     // See if the instance has a field with the given name and return it.
     if (fields.containsKey(name.lexeme)) {
       return fields.get(name.lexeme);
@@ -20,7 +20,13 @@ class LoxInstance {
 
     // Look for a method with that name on the instance’s class and return it.
     LoxFunction method = klass.findMethod(name.lexeme);
-    if (method != null) return method.bind(this);
+    if (method != null) {
+      LoxFunction bound = method.bind(this);
+      if (bound.isGetter()) {
+        return bound.call(interpreter, java.util.Collections.emptyList());
+      }
+      return bound;
+    }
 
     throw new RuntimeError(name, "Undefined property '" + name.lexeme + "'.");
   }

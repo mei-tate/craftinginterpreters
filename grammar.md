@@ -13,7 +13,10 @@ declaration    → classDecl
                | statement ;
 
 classDecl      → "class" IDENTIFIER ( "<" IDENTIFIER )?
-                 "{" function* "}" ;
+                 "{" classMember* "}" ;
+classMember    → method | getter ;
+method         → IDENTIFIER "(" parameters? ")" block ;
+getter         → IDENTIFIER block ;
 funDecl        → "fun" function ;
 varDecl        → "var" IDENTIFIER ( "=" expression )? ";" ;
 ```
@@ -115,7 +118,6 @@ DIGIT          → "0" ... "9" ;
 | Boolean       | `Boolean`           |
 | Number        | `Double`            |
 | String        | `String`            |
-
 
 
 

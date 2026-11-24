@@ -12,10 +12,13 @@ class LoxFunction implements LoxCallable {
   private final List<Stmt> body;
   private final Environment closure;
   private final boolean isInitializer;
+  private final boolean isGetter;
 
   LoxFunction(
-      Token name, List<Token> params, List<Stmt> body, Environment closure, boolean isInitializer) {
+      Token name, List<Token> params, List<Stmt> body, Environment closure,
+      boolean isInitializer, boolean isGetter) {
     this.isInitializer = isInitializer;
+    this.isGetter = isGetter;
     this.name = name;
     this.params = params;
     this.body = body;
@@ -27,7 +30,11 @@ class LoxFunction implements LoxCallable {
     // The resolver assigns `this` slot 0 in the method's enclosing scope, so it
     // must live in the slot-backed locals rather than the globals map.
     environment.defineAt(0, instance);
-    return new LoxFunction(name, params, body, environment, isInitializer);
+    return new LoxFunction(name, params, body, environment, isInitializer, isGetter);
+  }
+
+  boolean isGetter() {
+    return isGetter;
   }
 
   @Override
